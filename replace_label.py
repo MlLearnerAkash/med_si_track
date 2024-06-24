@@ -1,0 +1,32 @@
+import os
+import json
+import glob
+
+# Directory containing JSON files
+directory_path = '/workspace/med_si_track/dataset/augmented'
+
+# Function to update the label in a single annotation file
+def update_label(annotation):
+    for shape in annotation['shapes']:
+        if shape['label'] == 'needle?':
+            shape['label'] = 'needle'
+        if shape['label'] == 'needle ?':
+            shape['label'] = 'needle'
+        if shape['label'] == 'woods pack':
+            shape['label'] = 'woodspack'
+    return annotation
+
+# Process all JSON files in the directory
+for file_path in glob.glob(os.path.join(directory_path, '*.json')):
+    with open(file_path, 'r') as file:
+        annotation_content = json.load(file)
+        
+    updated_annotation = update_label(annotation_content)
+    
+    with open(file_path, 'w') as file:
+        json.dump(updated_annotation, file, indent=4)
+
+    print(f"Updated {file_path}")
+
+# Example directory path usage:
+# directory_path = '/path/to/your/json/files'
