@@ -1,0 +1,3 @@
+[submodule "imgAugForLabelmeAnnotation"]
+	path = imgAugForLabelmeAnnotation
+	url = https://github.com/MlLearnerAkash/imgAugForLabelmeAnootation.git
