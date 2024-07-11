@@ -3,7 +3,7 @@ import json
 import glob
 
 # Directory containing JSON files
-directory_path = '/workspace/med_si_track/dataset/augmented'
+directory_path = '/root/med_si_track/dataset/'
 
 # Function to update the label in a single annotation file
 def update_label(annotation):
@@ -14,6 +14,8 @@ def update_label(annotation):
             shape['label'] = 'needle'
         if shape['label'] == 'woods pack':
             shape['label'] = 'woodspack'
+        if shape['label'] == 'scissor':
+            shape['label'] = 'scissors'
     return annotation
 
 # Process all JSON files in the directory
