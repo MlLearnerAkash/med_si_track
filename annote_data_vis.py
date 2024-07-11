@@ -60,8 +60,8 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
     ax.xaxis.set_ticks(categories)
     ax.set_xticklabels(categories, rotation=90)
     # Show the plot
-    plt.save("annotations_stat.png")
-    plt.show()
+    plt.savefig("annotations_stat.png")
+    # plt.show()
 
 
 # fig = plt.figure(figsize=(8, 6))
