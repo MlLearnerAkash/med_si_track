@@ -16,6 +16,10 @@ def update_label(annotation):
             shape['label'] = 'woodspack'
         if shape['label'] == 'scissor':
             shape['label'] = 'scissors'
+        if shape['label'] == 'black suture':
+            shape['label'] = 'black_suture'
+        if shape['label'] == 'needle holder':
+            shape['label'] = 'needle_holder'
     return annotation
 
 # Process all JSON files in the directory
