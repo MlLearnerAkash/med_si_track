@@ -8,7 +8,7 @@
 #     └── coco8  ← downloads here (1 MB)
 
 # Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
-path: /root/med_si_track/dataset/YOLODataset/ # dataset root dir
+path: /mnt/sdb/YOLODataset/ # dataset root dir
 train: images/train # train images (relative to 'path') 4 images
 val: images/val # val images (relative to 'path') 4 images
 test: # test images (optional)
@@ -110,22 +110,39 @@ names:
   # 12: "scissors"
   # 13: "needle holder"
   # 14: "needle"
-  0: "glove"
-  1: "incision"
+  # 0: "glove"
+  # 1: "incision"
+  # 2: "clamp"
+  # 3: "forceps"
+  # 4: "snare"
+  # 5: "black_suture"
+  # 6: "sponge"
+  # 7: "sucker"
+  # 8: "obstruction"
+  # 9: "gauze"
+  # 10: "vesiloop"
+  # 11: "scissors"
+  # 12: "woodspack"
+  # 13: "needle_holder"
+  # 14: "needle"
+  # 15: "bovie"
+  # 16: "scalpel"
+  0: "incision"
+  1: "snare"
   2: "clamp"
-  3: "forceps"
-  4: "snare"
-  5: "black_suture"
-  6: "sponge"
-  7: "sucker"
-  8: "obstruction"
-  9: "gauze"
-  10: "vesiloop"
-  11: "scissors"
-  12: "woodspack"
-  13: "needle_holder"
-  14: "needle"
-  15: "bovie"
+  3: "needle_holder"
+  4: "gauze"
+  5: "forceps"
+  6: "glove"
+  7: "needle"
+  8: "sponge"
+  9: "obstruction"
+  10: "sucker"
+  11: "bovie"
+  12: "vesiloop"
+  13: "woodspack"
+  14: "black_suture"
+  15: "scissors"
   16: "scalpel"
 # Download script/URL (optional)
 # download: https://ultralytics.com/assets/coco8.zip
