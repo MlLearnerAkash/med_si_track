@@ -11,7 +11,7 @@ from sahi.utils.yolov8 import download_yolov8s_model
 from ultralytics.utils.files import increment_path
 
 
-def run(weights="yolov8n.pt", source="test.mp4", view_img=False, save_img=False, exist_ok=False):
+def run(weights="../../opervu-240724-train/train/weights/best.pt", source="test.mp4", view_img=False, save_img=False, exist_ok=False):
     """
     Run object detection on a video using YOLOv8 and SAHI.
 
@@ -30,7 +30,7 @@ def run(weights="yolov8n.pt", source="test.mp4", view_img=False, save_img=False,
     yolov8_model_path = f"models/{weights}"
     download_yolov8s_model(yolov8_model_path)
     detection_model = AutoDetectionModel.from_pretrained(
-        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.3, device="cpu"
+        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.3, device="0"
     )
 
     # Video setup
@@ -41,7 +41,7 @@ def run(weights="yolov8n.pt", source="test.mp4", view_img=False, save_img=False,
     # Output setup
     save_dir = increment_path(Path("ultralytics_results_with_sahi") / "exp", exist_ok)
     save_dir.mkdir(parents=True, exist_ok=True)
-    video_writer = cv2.VideoWriter(str(save_dir / f"{Path(source).stem}.mp4"), fourcc, fps, (frame_width, frame_height))
+    video_writer = cv2.VideoWriter(str(save_dir / f"{Path(source).stem}.mp4"), fourcc, fps-10, (frame_width, frame_height))
 
     while videocapture.isOpened():
         success, frame = videocapture.read()
