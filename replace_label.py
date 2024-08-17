@@ -3,7 +3,7 @@ import json
 import glob
 
 # Directory containing JSON files
-directory_path = '/mnt/new/dataset'
+directory_path = '/mnt/data/dataset'
 
 # Function to update the label in a single annotation file
 def update_label(annotation):
@@ -20,6 +20,22 @@ def update_label(annotation):
             shape['label'] = 'black_suture'
         if shape['label'] == 'needle holder':
             shape['label'] = 'needle_holder'
+        if shape['label'] == 'clamp 4':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'clamp 7':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'clamp 5':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'clamp 6':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'clamp 9':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'clamp 8':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'wire cutter clamp':
+            shape['label'] = 'clamp'
+        if shape['label'] == 'wire cutter':
+            shape['label'] = 'clamp'
     return annotation
 
 # Process all JSON files in the directory

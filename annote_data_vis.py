@@ -54,7 +54,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
 
     # Add text annotations to the bars
     ax.bar_label(ax.containers[-1], label_type='edge')
-
+    print(">>>>>>>>>>>>>>", categories)
     ax.set_xlabel('Category')
     ax.set_ylabel('# annotations')
     ax.xaxis.set_ticks(categories)
