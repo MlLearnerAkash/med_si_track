@@ -31,7 +31,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
                             category_counts[category] = 0
                         category_counts[category] += 1
                         ##NOTE: add needle class
-                        if False:#save_needle_images== True:
+                        if save_needle_images== True:
                             if category=="needle":
                                 # print(">>>>>", category)
                                 # print(">>>>>", needle_dest_path+ val_path.split("/")[-1])
@@ -60,7 +60,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
     ax.xaxis.set_ticks(categories)
     ax.set_xticklabels(categories, rotation=90)
     # Show the plot
-    plt.savefig("annotations_stat_2.png")
+    plt.savefig("annotations_stat_needle_images_1146_220824.png")
     # plt.show()
 
 
