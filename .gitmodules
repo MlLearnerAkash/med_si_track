@@ -1,3 +1,6 @@
 [submodule "imgAugForLabelmeAnnotation"]
 	path = imgAugForLabelmeAnnotation
 	url = https://github.com/MlLearnerAkash/imgAugForLabelmeAnootation.git
+[submodule "LabelMeToYoloSegmentation"]
+	path = LabelMeToYoloSegmentation
+	url = https://github.com/gyupro/LabelMeToYoloSegmentation.git
