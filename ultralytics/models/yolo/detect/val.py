@@ -40,6 +40,7 @@ class DetectionValidator(BaseValidator):
         self.iouv = torch.linspace(0.5, 0.95, 10)  # IoU vector for mAP@0.5:0.95
         self.niou = self.iouv.numel()
         self.lb = []  # for autolabelling
+        
 
     def preprocess(self, batch):
         """Preprocesses batch of images for YOLO training."""
@@ -207,6 +208,13 @@ class DetectionValidator(BaseValidator):
             (torch.Tensor): Correct prediction matrix of shape [N, 10] for 10 IoU levels.
         """
         iou = box_iou(gt_bboxes, detections[:, :4])
+        # Assuming 'detections' is a PyTorch tensor and 'mapping_dict' is your mapping dictionary
+        #NOTE: Akash Added for Another dataset validation
+        # mapping_dict = {0: 12, 1: 13, 2: 2, 3: 11, 4: 3, 5: 9, 6: 5, 7: 14, 8: 10, 9: 7, 10: 8, 11: 6,12:6, 13: 4, 14: 0, 15: 15, 16: 1}
+
+        # # One-liner to modify the values
+        # detections[:, 5] = torch.tensor([mapping_dict[int(i.item())] for i in detections[:, 5]], device=detections.device)
+
         return self.match_predictions(detections[:, 5], gt_cls, iou)
 
     def build_dataset(self, img_path, mode="val", batch=None):
@@ -227,6 +235,7 @@ class DetectionValidator(BaseValidator):
 
     def plot_val_samples(self, batch, ni):
         """Plot validation image samples."""
+        
         plot_images(
             batch["img"],
             batch["batch_idx"],
@@ -240,6 +249,7 @@ class DetectionValidator(BaseValidator):
 
     def plot_predictions(self, batch, preds, ni):
         """Plots predicted bounding boxes on input images and saves the result."""
+        # print(">>>>>>>plot_predictions>>>>>>>>>", self.names)
         plot_images(
             batch["img"],
             *output_to_target(preds, max_det=self.args.max_det),
