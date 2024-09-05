@@ -1,13 +1,15 @@
 from ultralytics import YOLO
 
 # Load a pretrained YOLOv8n model
-model = YOLO("/mnt/new/weights/train/weights/best.pt")
+model = YOLO("/root/ws/med_si_track/opervu-310824-needle-sponge-training/train/weights/best.pt")
 
 # Define path to directory containing images and videos for inference
-source = "/mnt/new/needle_images/*.jpg"
+source = "/mnt/data/aug_needle_images/*.png"
 
 # Run inference on the source
-results = model(source, classes=[5], save= True, save_frames = True)  # generator of Results objects
+results = model(source, conf = 0.5, imgsz = 2480, save_json = True,
+                vid_stride = 100, classes= [5, 11], show = False,
+                device = "0")  # generator of Results objects
 
 
 # #TODO
