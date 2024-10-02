@@ -26,7 +26,7 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
     if not source_path.exists() or not source_path.is_dir():
         raise FileNotFoundError(f"Source path '{source}' does not exist or is not a directory.")
 
-    yolov8_model_path = f"models/{weights}"
+    yolov8_model_path = f"{weights}"
     download_yolov8s_model(yolov8_model_path)
     detection_model = AutoDetectionModel.from_pretrained(
         model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.3, device="0"
@@ -37,7 +37,7 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
     save_dir.mkdir(parents=True, exist_ok=True)
 
     # Process each image in the directory
-    for image_path in source_path.glob("*.jpg"):
+    for image_path in source_path.glob("*.png"):
         frame = cv2.imread(str(image_path))
         if frame is None:
             print(f"Failed to load image '{image_path}'. Skipping.")
