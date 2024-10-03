@@ -29,7 +29,7 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
     yolov8_model_path = f"{weights}"
     download_yolov8s_model(yolov8_model_path)
     detection_model = AutoDetectionModel.from_pretrained(
-        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.3, device="0"
+        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.05, device="0", image_size = 2048
     )
 
     # Output setup
@@ -44,10 +44,10 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
             continue
 
         results = get_sliced_prediction(
-            frame, detection_model, slice_height=512, slice_width=512, overlap_height_ratio=0.2, overlap_width_ratio=0.2
+            frame, detection_model, slice_height=312, slice_width=312, overlap_height_ratio=0.2, overlap_width_ratio=0.2
         )
         object_prediction_list = results.object_prediction_list
-
+        print(object_prediction_list)
         boxes_list = []
         clss_list = []
         for ind, _ in enumerate(object_prediction_list):
