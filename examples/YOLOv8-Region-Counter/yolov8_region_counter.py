@@ -152,7 +152,7 @@ def run(
         vid_frame_count += 1
 
         # Extract the results
-        results = model.track(frame, persist=True, classes=classes)
+        results = model.track(frame, persist=True, classes=classes, conf = 0.05, save = False, imgsz = 480, cfg = "/root/ws/med_si_track/ultralytics/cfg/trackers/botsort.yaml")
 
         if results[0].boxes.id is not None:
             boxes = results[0].boxes.xyxy.cpu()
@@ -227,9 +227,9 @@ def run(
 def parse_opt():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--weights", type=str, default="yolov8n.pt", help="initial weights path")
-    parser.add_argument("--device", default="", help="cuda device, i.e. 0 or 0,1,2,3 or cpu")
-    parser.add_argument("--source", type=str, required=True, help="video file path")
+    parser.add_argument("--weights", type=str, default="/mnt/data/weights/base_weight/weights/best.pt", help="initial weights path")
+    parser.add_argument("--device", default="0", help="cuda device, i.e. 0 or 0,1,2,3 or cpu")
+    parser.add_argument("--source", type=str,default="/mnt/data/training.avi", required=False, help="video file path")
     parser.add_argument("--view-img", action="store_true", help="show results")
     parser.add_argument("--save-img", action="store_true", help="save results")
     parser.add_argument("--exist-ok", action="store_true", help="existing project/name ok, do not increment")
