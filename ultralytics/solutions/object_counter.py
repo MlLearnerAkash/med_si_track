@@ -139,9 +139,97 @@ class ObjectCounter:
             self.is_drawing = False
             self.selected_point = None
 
+    # def extract_and_process_tracks(self, tracks):
+    #     """Extracts and processes tracks for object counting in a video stream."""
+    #     self.items_status = []
+    #     # Annotator Init and region drawing
+    #     self.annotator = Annotator(self.im0, self.tf, self.names)
+
+    #     # Draw region or line
+    #     self.annotator.draw_region(reg_pts=self.reg_pts, color=self.region_color, thickness=self.region_thickness)
+
+    #     if tracks[0].boxes.id is not None:
+    #         boxes = tracks[0].boxes.xyxy.cpu()
+    #         clss = tracks[0].boxes.cls.cpu().tolist()
+    #         track_ids = tracks[0].boxes.id.int().cpu().tolist()
+            
+    #         self.item_status= {}
+    #         # Extract tracks
+    #         for box, track_id, cls in zip(boxes, track_ids, clss):
+    #             self.item_status["class_id"]= cls
+    #             self.item_status["track_id"] = track_id
+    #             # Draw bounding box
+    #             self.annotator.box_label(box, label=f"{self.names[cls]}#{track_id}", color=colors(int(track_id), True))
+
+    #             # Store class info
+    #             if self.names[cls] not in self.class_wise_count:
+    #                 self.class_wise_count[self.names[cls]] = {"IN": 0, "OUT": 0}
+
+    #             # Draw Tracks
+    #             track_line = self.track_history[track_id]
+    #             track_line.append((float((box[0] + box[2]) / 2), float((box[1] + box[3]) / 2)))
+    #             if len(track_line) > 30:
+    #                 track_line.pop(0)
+
+    #             # Draw track trails
+    #             if self.draw_tracks:
+    #                 self.annotator.draw_centroid_and_tracks(
+    #                     track_line,
+    #                     color=self.track_color if self.track_color else colors(int(track_id), True),
+    #                     track_thickness=self.track_thickness,
+    #                 )
+
+    #             prev_position = self.track_history[track_id][-2] if len(self.track_history[track_id]) > 1 else None
+
+    #             # Count objects in any polygon
+    #             if len(self.reg_pts) >= 3:
+    #                 is_inside = self.counting_region.contains(Point(track_line[-1]))
+    #                 self.item_status["status"] = is_inside
+
+    #                 if prev_position is not None and is_inside and track_id not in self.count_ids:
+    #                     self.count_ids.append(track_id)
+
+    #                     if (box[0] - prev_position[0]) * (self.counting_region.centroid.x - prev_position[0]) > 0:
+    #                         self.in_counts += 1
+    #                         self.class_wise_count[self.names[cls]]["IN"] += 1
+    #                     else:
+    #                         self.out_counts += 1
+    #                         self.class_wise_count[self.names[cls]]["OUT"] += 1
+
+    #             # Count objects using line
+    #             elif len(self.reg_pts) == 2:
+    #                 if prev_position is not None and track_id not in self.count_ids:
+    #                     distance = Point(track_line[-1]).distance(self.counting_region)
+    #                     if distance < self.line_dist_thresh and track_id not in self.count_ids:
+    #                         self.count_ids.append(track_id)
+
+    #                         if (box[0] - prev_position[0]) * (self.counting_region.centroid.x - prev_position[0]) > 0:
+    #                             self.in_counts += 1
+    #                             self.class_wise_count[self.names[cls]]["IN"] += 1
+    #                         else:
+    #                             self.out_counts += 1
+    #                             self.class_wise_count[self.names[cls]]["OUT"] += 1
+    #             self.items_status.append(self.item_status)
+    #     labels_dict = {}
+
+    #     for key, value in self.class_wise_count.items():
+    #         if value["IN"] != 0 or value["OUT"] != 0:
+    #             if not self.view_in_counts and not self.view_out_counts:
+    #                 continue
+    #             elif not self.view_in_counts:
+    #                 labels_dict[str.capitalize(key)] = f"OUT {value['OUT']}"
+    #             elif not self.view_out_counts:
+    #                 labels_dict[str.capitalize(key)] = f"IN {value['IN']}"
+    #             else:
+    #                 labels_dict[str.capitalize(key)] = f"IN {value['IN']} OUT {value['OUT']}"
+
+    #     if labels_dict:
+    #         self.annotator.display_analytics(self.im0, labels_dict, self.count_txt_color, self.count_bg_color, 10)
+
+    #     return self.items_status
     def extract_and_process_tracks(self, tracks):
         """Extracts and processes tracks for object counting in a video stream."""
-
+        self.items_status = []
         # Annotator Init and region drawing
         self.annotator = Annotator(self.im0, self.tf, self.names)
 
@@ -155,10 +243,12 @@ class ObjectCounter:
 
             # Extract tracks
             for box, track_id, cls in zip(boxes, track_ids, clss):
+                item_status = {"class_id": cls, "track_id": track_id}  # Reset for each track
+                
                 # Draw bounding box
                 self.annotator.box_label(box, label=f"{self.names[cls]}#{track_id}", color=colors(int(track_id), True))
 
-                # Store class info
+                # Initialize class info if not present
                 if self.names[cls] not in self.class_wise_count:
                     self.class_wise_count[self.names[cls]] = {"IN": 0, "OUT": 0}
 
@@ -178,9 +268,11 @@ class ObjectCounter:
 
                 prev_position = self.track_history[track_id][-2] if len(self.track_history[track_id]) > 1 else None
 
-                # Count objects in any polygon
+                # Count objects in any polygon region
+                is_inside = False
                 if len(self.reg_pts) >= 3:
                     is_inside = self.counting_region.contains(Point(track_line[-1]))
+                    item_status["is_inside"] = is_inside  # Update the inside status
 
                     if prev_position is not None and is_inside and track_id not in self.count_ids:
                         self.count_ids.append(track_id)
@@ -192,7 +284,7 @@ class ObjectCounter:
                             self.out_counts += 1
                             self.class_wise_count[self.names[cls]]["OUT"] += 1
 
-                # Count objects using line
+                # Count objects crossing a line
                 elif len(self.reg_pts) == 2:
                     if prev_position is not None and track_id not in self.count_ids:
                         distance = Point(track_line[-1]).distance(self.counting_region)
@@ -205,9 +297,13 @@ class ObjectCounter:
                             else:
                                 self.out_counts += 1
                                 self.class_wise_count[self.names[cls]]["OUT"] += 1
+                else:
+                    item_status["is_inside"] = is_inside  # Default if not in polygon or line-based counting
+
+                # Append item_status for each track
+                self.items_status.append(item_status)
 
         labels_dict = {}
-
         for key, value in self.class_wise_count.items():
             if value["IN"] != 0 or value["OUT"] != 0:
                 if not self.view_in_counts and not self.view_out_counts:
@@ -221,6 +317,9 @@ class ObjectCounter:
 
         if labels_dict:
             self.annotator.display_analytics(self.im0, labels_dict, self.count_txt_color, self.count_bg_color, 10)
+
+        return self.items_status
+
 
     def display_frames(self):
         """Displays the current frame with annotations and regions in a window."""
@@ -242,11 +341,11 @@ class ObjectCounter:
             tracks (list): List of tracks obtained from the object tracking process.
         """
         self.im0 = im0  # store image
-        self.extract_and_process_tracks(tracks)  # draw region even if no objects
+        self.item_status = self.extract_and_process_tracks(tracks)  # draw region even if no objects
 
         if self.view_img:
             self.display_frames()
-        return self.im0
+        return self.im0, self.item_status
 
 
 if __name__ == "__main__":
