@@ -60,7 +60,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
     ax.xaxis.set_ticks(categories)
     ax.set_xticklabels(categories, rotation=90)
     # Show the plot
-    plt.savefig("sponge_needle_stat_310824.png")
+    plt.savefig("oct_2500_stat.png")
     # plt.show()
 
 

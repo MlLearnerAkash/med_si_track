@@ -7,7 +7,7 @@ import torch
 
 
 # Load a model
-model = YOLO("/root/ws/med_si_track/opervu-310824-needle-sponge-training/train/weights/best.pt")
+model = YOLO("/root/ws/med_si_track/custom_needle/train7/weights/best.pt")
 # print("Original model names:", model.names)
 # class_mapping = {0: 'sponge', 1: 'obstruction', 2: 'scalpel', 3: 'incision', 4: 'woodspack', 5: 'scissors', 6: 'gauze', 7: 'snare', 8: 'black_suture', 9: 'needle', 10: 'glove', 11: 'vesiloop', 12: 'needle_holder', 13: 'forceps', 14: 'sucker', 15: 'clamp', 16: 'obstruction'}
 

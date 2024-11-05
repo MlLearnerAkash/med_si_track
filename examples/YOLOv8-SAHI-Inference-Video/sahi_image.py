@@ -29,7 +29,7 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
     yolov8_model_path = f"{weights}"
     download_yolov8s_model(yolov8_model_path)
     detection_model = AutoDetectionModel.from_pretrained(
-        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.05, device="0", image_size = 2048
+        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.01, device="0", image_size = 2048
     )
 
     # Output setup
@@ -44,12 +44,12 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
             continue
 
         results = get_sliced_prediction(
-            frame, detection_model, slice_height=312, slice_width=312, overlap_height_ratio=0.2, overlap_width_ratio=0.2
+            frame, detection_model, slice_height=1024, slice_width=1024, overlap_height_ratio=0.2, overlap_width_ratio=0.2
         )
         object_prediction_list = results.object_prediction_list
-        print(object_prediction_list)
         boxes_list = []
         clss_list = []
+        scores = []
         for ind, _ in enumerate(object_prediction_list):
             boxes = (
                 object_prediction_list[ind].bbox.minx,
@@ -58,14 +58,16 @@ def run(weights="/mnt/new/weights/train/weights/best.pt", source="images/", view
                 object_prediction_list[ind].bbox.maxy,
             )
             clss = object_prediction_list[ind].category.name
-            print(object_prediction_list[ind])
+            scrs = object_prediction_list[ind].score.value
+            print()
             boxes_list.append(boxes)
             clss_list.append(clss)
+            scores.append(scrs)
 
-        for box, cls in zip(boxes_list, clss_list):
+        for box, cls, score in zip(boxes_list, clss_list, scores):
             x1, y1, x2, y2 = box
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (56, 56, 255), 2)
-            label = str(cls)
+            label = str(cls) + f":{str(round(score, 3))}"
             t_size = cv2.getTextSize(label, 0, fontScale=0.6, thickness=1)[0]
             cv2.rectangle(
                 frame, (int(x1), int(y1) - t_size[1] - 3), (int(x1) + t_size[0], int(y1) + 3), (56, 56, 255), -1

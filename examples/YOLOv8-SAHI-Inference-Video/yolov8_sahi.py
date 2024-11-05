@@ -27,10 +27,10 @@ def run(weights="../../opervu-240724-train/train/weights/best.pt", source="test.
     if not Path(source).exists():
         raise FileNotFoundError(f"Source path '{source}' does not exist.")
 
-    yolov8_model_path = f"models/{weights}"
+    yolov8_model_path = f"{weights}"
     download_yolov8s_model(yolov8_model_path)
     detection_model = AutoDetectionModel.from_pretrained(
-        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.3, device="0"
+        model_type="yolov8", model_path=yolov8_model_path, confidence_threshold=0.01, device="0"
     )
 
     # Video setup
