@@ -134,5 +134,5 @@ def main(model_path, image_path, gt_path):
 
 # Run the function
 if __name__ == "__main__":
-    main('/root/ws/HIC-Yolov5/runs/train/only_needle_images/weights/best.pt', '/mnt/data/oct_2500/needle_image/YOLODataset/images/val/21356.jpg', '/mnt/data/oct_2500/needle_image/YOLODataset/labels/val/21356.txt')
+    main('/root/ws/HIC-Yolov5/runs/train/only_needle_images/weights/best.pt', '/mnt/data/needle_images_only/needle_images/3446.jpg', '/mnt/data/needle_images_only/needle_images/3446.txt')
     # print(load_yolo_model("/root/ws/HIC-Yolov5/runs/train/only_needle_images/weights/best.pt")["model"].eval())
