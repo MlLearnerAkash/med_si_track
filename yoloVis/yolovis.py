@@ -1,27 +1,25 @@
+
 import cv2
+import numpy as np
 import os
 
-def denormalize_bbox(center_x, center_y, width, height, img_width, img_height):
+def denormalize_points(points, img_width, img_height):
     """
-    Convert YOLO normalized bounding box values to absolute pixel values.
-
+    Convert normalized YOLO polygon points to absolute pixel values.
+    
     Parameters:
-        center_x, center_y (float): Normalized center of the rectangle.
-        width, height (float): Normalized width and height of the rectangle.
-        img_width, img_height (int): Dimensions of the image.
+        points (list of tuples): List of (x, y) normalized coordinates.
+        img_width (int): Width of the image.
+        img_height (int): Height of the image.
 
     Returns:
-        (x1, y1, x2, y2): Absolute coordinates of the top-left and bottom-right corners.
+        list of tuples: List of (x, y) pixel coordinates.
     """
-    x1 = int((center_x - width / 2) * img_width)
-    y1 = int((center_y - height / 2) * img_height)
-    x2 = int((center_x + width / 2) * img_width)
-    y2 = int((center_y + height / 2) * img_height)
-    return x1, y1, x2, y2
+    return [(int(x * img_width), int(y * img_height)) for x, y in points]
 
-def draw_rect_annotations(image_path, label_path, output_path):
+def draw_polygon_annotations(image_path, label_path, output_path):
     """
-    Draw YOLO rectangular annotations on a single image and save the result.
+    Draw YOLO polygonal annotations on a single image and save the result.
 
     Parameters:
         image_path (str): Path to the input image.
@@ -47,18 +45,21 @@ def draw_rect_annotations(image_path, label_path, output_path):
 
     for line in lines:
         data = line.strip().split()
-        if len(data) != 5:
+        if len(data) < 3:
             continue
 
         class_id = int(data[0])  # Class ID
-        center_x, center_y, bbox_width, bbox_height = map(float, data[1:])
-        x1, y1, x2, y2 = denormalize_bbox(center_x, center_y, bbox_width, bbox_height, img_width, img_height)
+        points = list(map(float, data[1:]))
+        # Convert to (x, y) pairs
+        points = [(points[i], points[i + 1]) for i in range(0, len(points), 2)]
+        # Denormalize points to pixel values
+        abs_points = denormalize_points(points, img_width, img_height)
 
-        # Draw rectangle
-        cv2.rectangle(image, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
+        # Draw polygon
+        cv2.polylines(image, [np.array(abs_points, dtype=np.int32)], isClosed=True, color=(0, 255, 0), thickness=6)
 
-        # Optional: Draw class ID near the top-left corner
-        cv2.putText(image, str(class_id), (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+        # Optional: Draw class ID near the first point
+        cv2.putText(image, str(class_id), abs_points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
     # Save the annotated image
     cv2.imwrite(output_path, image)
@@ -66,8 +67,8 @@ def draw_rect_annotations(image_path, label_path, output_path):
 
 if __name__ == "__main__":
     # Input paths for the image and the annotation file
-    image_path = "/mnt/data/needle_images_only/aug_needle_images/YOLOSegData/images/train/9798_aug_5.png"       # Replace with your image path
-    label_path = "/mnt/data/needle_images_only/aug_needle_images/YOLOSegData/labels/train/9798_aug_5.txt" # Replace with your annotation path
-    output_path = "output.jpg"    # Replace with your output path
+    image_path = "/root/ws/med_si_track/LabelMeToYoloSegmentation/images/train/31883_aug_5.png"       # Replace with your image path
+    label_path = "/root/ws/med_si_track/LabelMeToYoloSegmentation/labels/train/31883_aug_5.txt" # Replace with your annotation path
+    output_path = "yolo_vis.jpg"    # Replace with your output path
 
-    draw_rect_annotations(image_path, label_path, output_path)
+    draw_polygon_annotations(image_path, label_path, output_path)

@@ -36,6 +36,6 @@ def draw_annotations(json_path, output_path):
     cv2.imwrite(output_path, image)
 
 # Example usage
-json_path = "/mnt/data/needle_images_only/aug_needle_images/27471_aug_1.json"
-output_path = "27471_aug_1.png"
+json_path = "/mnt/data/needle_images_only/aug_needle_images/31883_aug_5.json"
+output_path = "31883_aug_5.png"
 draw_annotations(json_path, output_path)
