@@ -1,0 +1,6 @@
+path: /root/ws/med_si_track/LabelMeToYoloSegmentation
+                    train: images/train
+                    val: images/val
+
+                    nc: 1
+                    names: ['needle']
