@@ -8,8 +8,8 @@ print(model.names)
 source = "/root/ws/med_si_track/test_data/needle.avi"
 
 # Run inference on the source
-results = model(source, conf = 0.005, imgsz = 2480, save_json = True,
-                show = True, iou= 0.25,
+results = model(source, conf = 0.1, imgsz = 2480, save_json = True,
+                show = True, iou= 0.25,save=True,
                 device = "0")  # generator of Results objects
 
 

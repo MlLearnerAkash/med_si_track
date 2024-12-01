@@ -232,7 +232,6 @@ class ObjectCounter:
         self.items_status = []
         # Annotator Init and region drawing
         self.annotator = Annotator(self.im0, self.tf, self.names)
-
         # Draw region or line
         self.annotator.draw_region(reg_pts=self.reg_pts, color=self.region_color, thickness=self.region_thickness)
 
@@ -243,7 +242,7 @@ class ObjectCounter:
 
             # Extract tracks
             for box, track_id, cls in zip(boxes, track_ids, clss):
-                item_status = {"class_id": cls, "track_id": track_id}  # Reset for each track
+                item_status = {"class_name": self.names[cls], "track_id": track_id}  # Reset for each track
                 
                 # Draw bounding box
                 self.annotator.box_label(box, label=f"{self.names[cls]}#{track_id}", color=colors(int(track_id), True))
@@ -273,6 +272,7 @@ class ObjectCounter:
                 if len(self.reg_pts) >= 3:
                     is_inside = self.counting_region.contains(Point(track_line[-1]))
                     item_status["is_inside"] = is_inside  # Update the inside status
+                    item_status["is_outside"] = not is_inside  # Update the outside status
 
                     if prev_position is not None and is_inside and track_id not in self.count_ids:
                         self.count_ids.append(track_id)
@@ -314,9 +314,10 @@ class ObjectCounter:
                     labels_dict[str.capitalize(key)] = f"IN {value['IN']}"
                 else:
                     labels_dict[str.capitalize(key)] = f"IN {value['IN']} OUT {value['OUT']}"
-
-        if labels_dict:
-            self.annotator.display_analytics(self.im0, labels_dict, self.count_txt_color, self.count_bg_color, 10)
+        #NOTE:stopping display analyics
+        if False:
+            if labels_dict:
+                self.annotator.display_analytics(self.im0, labels_dict, self.count_txt_color, self.count_bg_color, 10)
 
         return self.items_status
 

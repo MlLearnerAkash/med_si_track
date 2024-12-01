@@ -1,66 +1,7 @@
-# import ultralytics
-# ultralytics.checks()
-
-# import cv2
-# from ultralytics import YOLO, solutions
-
-
-# # Load the pre-trained YOLOv8 model
-# model = YOLO("/root/ws/med_si_track/custom_needle/train7/weights/best.pt")
-# print(model.names)
-# # Open the video file
-# cap = cv2.VideoCapture("/root/ws/med_si_track/test_data/training_6.avi")
-# assert cap.isOpened(), "Error reading video file"
-
-# # Get video properties: width, height, and frames per second (fps)
-# w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
-
-# # Define points for a line or region of interest in the video frame
-# line_points = [(20, 20),(20, 2048), (2048, 2048), (2048, 20)]  # Line coordinates
-
-# # Specify classes to count, for example: person (0) and car (2)
-# classes_to_count = [0] # Class IDs for person and car
-
-# # Initialize the video writer to save the output video
-# video_writer = cv2.VideoWriter("object_counting_output.avi", cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
-
-# # Initialize the Object Counter with visualization options and other parameters
-# counter = solutions.ObjectCounter(
-#     view_img=True,  # Display the image during processing
-#     reg_pts=line_points,  # Region of interest points
-#     classes_names=model.names,  # Class names from the YOLO model
-#     draw_tracks=True,  # Draw tracking lines for objects
-#     line_thickness=4,  # Thickness of the lines drawn
-# )
-
-
-# # Process video frames in a loop
-# while cap.isOpened():
-#     success, im0 = cap.read()
-#     if not success:
-#         print("Video frame is empty or video processing has been successfully completed.")
-#         break
-
-#     # Perform object tracking on the current frame, filtering by specified classes
-#     tracks = model.track(im0, persist=True, conf=0.1, iou=0.1, show=False, classes=classes_to_count, imgsz = 2480)
-
-#     # Use the Object Counter to count objects in the frame and get the annotated image
-#     im0 = counter.start_counting(im0, tracks)
-
-#     # Write the annotated frame to the output video
-#     video_writer.write(im0)
-
-# # Release the video capture and writer objects
-# cap.release()
-# video_writer.release()
-
-# # Close all OpenCV windows
-# cv2.destroyAllWindows()
-
 
 import argparse
 from pathlib import Path
-
+import os
 import cv2
 import numpy as np
 from shapely.geometry import Polygon
@@ -72,14 +13,27 @@ from ultralytics.utils.plotting import Annotator, colors
 
 import json
 
+
+
+# Directory paths for saving images and JSON files
+output_dir = "output"
+image_dir = os.path.join(output_dir, "images")
+json_dir = os.path.join(output_dir, "json")
+
+# Create the directories if they don't exist
+os.makedirs(image_dir, exist_ok=True)
+os.makedirs(json_dir, exist_ok=True)
+
 def mouse_callback(event, x, y, flags, param):
     """Mouse event callback for manipulating regions."""
     pass  # Keep the mouse callback if required later
 
 
+
+
 def run(
     weights="/root/ws/med_si_track/custom_needle_large/large/weights/best.pt",
-    source="/root/ws/med_si_track/test_data/training_6.avi",
+    source="/mnt/data/training_6.avi",
     device="cpu",
     view_img=False,
     save_img=False,
@@ -108,7 +62,6 @@ def run(
 
     # Initialize the YOLO model
     model = YOLO(weights)
-    print("Model classes:", model.names)
 
     # Load video
     cap = cv2.VideoCapture(source)
@@ -118,7 +71,8 @@ def run(
     w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
     # Define points for a region of interest (ROI) or line
-    line_points = [(20, 20), (20, 640), (640, 640), (640, 20)]  # ROI coordinates
+    #qAdd 30 to x and y coordinates to shift the ROI to the right and down
+    line_points = [(50, 20), (50, 420), (550, 420), (550, 20)]  # ROI coordinates
 
     # Define object classes to count (use class IDs)
     classes_to_count = []  # For example, counting class 0 (persons, etc.)
@@ -139,6 +93,8 @@ def run(
         line_thickness=line_thickness  # Line thickness for tracking
     )
 
+    frame_index = 0  # Initialize frame index
+
     # Process video frame-by-frame
     while cap.isOpened():
         success, im0 = cap.read()
@@ -147,20 +103,28 @@ def run(
             break
 
         # Perform object tracking with YOLO, filtering by specified classes
-        tracks = model.track(im0, persist=True, conf=0.25,iou=0.25, show=False, imgsz=2480, tracker="botsort.yaml")#, 
+        tracks = model.track(im0, persist=True, conf=0.25, iou=0.25, show=False, imgsz=2480, tracker="botsort.yaml")
 
         # Count objects in the current frame using the ObjectCounter
         im0, item_status = counter.start_counting(im0, tracks)
-        
-        # Write the updated all_item_status to a JSON file
-        with open("item_status.json", "w") as f:
-            json.dump(item_status, f, indent=4)
-        print(item_status)
-        
 
-        # Save the annotated frame to output video
+        # Save the JSON file for the current frame
+        json_path = os.path.join(json_dir, f"frame_{frame_index:05d}.json")
+        with open(json_path, "w") as f:
+            json.dump(item_status, f, indent=4)
+        
+        # Save the annotated frame as an image
+        image_path = os.path.join(image_dir, f"frame_{frame_index:05d}.jpg")
+        cv2.imwrite(image_path, im0)
+        
+        print(f"Frame {frame_index} processed and saved: {json_path}, {image_path}")
+
+        # Save the annotated frame to output video (optional)
         if save_img:
             video_writer.write(im0)
+
+        # Increment frame index for the next iteration
+        frame_index += 1
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):

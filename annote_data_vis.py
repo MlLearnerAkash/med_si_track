@@ -15,7 +15,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
     # Loop through the JSON files in the directory
     counter= 0
     for json_file in [f for f in os.listdir(base_dir) if f.endswith('.json')]: #os.listdir(base_dir):
-        val_path= base_dir +json_file.split(".")[0] + ".jpg"#".jpg" 
+        val_path= base_dir +json_file.split(".")[0] + ".png"#".jpg" 
         if os.path.exists(val_path):
             print("[Manna-log]: Processing: ", json_file)
             try:
@@ -60,7 +60,7 @@ def image_statistics_generator(base_dir, needle_dest_path, save_needle_images):
     ax.xaxis.set_ticks(categories)
     ax.set_xticklabels(categories, rotation=90)
     # Show the plot
-    plt.savefig("oct_2500_stat.png")
+    plt.savefig("test_850_stat.png")
     # plt.show()
 
 
