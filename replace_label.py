@@ -3,7 +3,7 @@ import json
 import glob
 
 # Directory containing JSON files
-directory_path = '/mnt/data/oct_2500'
+directory_path = '/mnt/data/dataset/'
 
 # Function to update the label in a single annotation file
 def update_label(annotation):
