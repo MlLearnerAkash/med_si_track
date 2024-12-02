@@ -6,9 +6,16 @@ from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from pathlib import Path
 from PIL import Image
+from pathlib import Path
+
 
 # Create a global label dictionary to store label-to-index mapping
-label_dict = {"needle":0}
+label_dict = {
+    'clamp': 0, 'sponge': 1, 'gauze': 2, 'glove': 3, 'snare': 4, 'incision': 5, 'forceps': 6,
+    'obstruction': 7, 'vesiloop': 8, 'sucker': 9, 'black_suture': 10, 'scissors': 11, 'bovie': 12,
+    'woodspack': 13, 'needle': 14, 'needle_holder': 15, 'woods_pack': 16, 'scalpel': 17
+}
+
 
 def get_label_index(label):
     """Get index for a label, create new entry if it doesn't exist"""
@@ -48,7 +55,8 @@ def convert_labelme_to_yolo(json_file, output_dir, output_format):
     with open(json_file, 'r') as f:
         data = json.load(f)
     # Get the image path from the annotation
-    img_path = os.path.join(os.path.dirname(json_file), data['imagePath'])
+
+    img_path = os.path.join(os.path.dirname(json_file), Path(json_file).stem+".jpg")
     
     # Open the image using PIL to get the height and width
     with Image.open(img_path) as img:
